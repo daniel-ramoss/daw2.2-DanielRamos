@@ -5,17 +5,18 @@ $conexion = obtenerPdoConexionBD();
 
 $id = (int)$_REQUEST["id"];
 $nombre = $_REQUEST["nombre"];
+$apellidos = $_REQUEST["apellidos"];
 $telefono = $_REQUEST["telefono"];
-$categoriaId =(int)$_REQUEST["categoria_id"];
+$idCategoria =(int)$_REQUEST["categoriaId"];
 
 $nuevaPersona = ($id == -1);
 
 if ($nuevaPersona) {
-    $sql = "INSERT INTO persona (nombre, telefono, categoria_id) VALUES (?, ?, ?)";
-    $parametros = [$nombre, $telefono, $categoriaId];
+    $sql = "INSERT INTO persona (nombre, apellidos, telefono, categoriaId) VALUES (?, ?, ?, ?)";
+    $parametros = [$nombre, $apellidos, $telefono, $idCategoria];
 } else {
-    $sql = "UPDATE persona SET nombre=?, telefono=?, categoria_id=? WHERE id=?";
-    $parametros = [$nombre, $telefono, $categoriaId, $id];
+    $sql = "UPDATE persona SET nombre=?, apellidos=?, telefono=?, categoriaId=? WHERE id=?";
+    $parametros = [$nombre, $apellidos, $telefono, $idCategoria, $id];
 }
 
 $sentencia = $conexion->prepare($sql);
@@ -46,10 +47,10 @@ $datosNoModificados = ($sqlConExito && $ningunaFilaAfectada);
 if ($correctaEjecucion || $datosNoModificados) { ?>
     <?php if ($id == -1) { ?>
         <h1>Inserción completada</h1>
-        <p>Se han insertado correctamente las nuevas entradas de <?=$nombre?>, <?=$telefono?> y <?=$categoriaId?>.</p>
+        <p>Se han insertado correctamente las nuevas entradas de <?=$nombre?>, <?=$apellidos?>, <?=$telefono?> y <?=$idCategoria?>.</p>
     <?php } else { ?>
         <h1>Guardado completado</h1>
-        <p>Se han guardado correctamente los datos de <?=$nombre?>, <?=$telefono?> y <?=$categoriaId?>.</p>
+        <p>Se han guardado correctamente los datos de <?=$nombre?>, <?=$apellidos?>, <?=$telefono?> y <?=$idCategoria?>.</p>
 
         <?php if ($datosNoModificados) { ?>
             <p>No se ha modificado nada.</p>

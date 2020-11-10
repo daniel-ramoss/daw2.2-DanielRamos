@@ -5,13 +5,14 @@ $conexion = obtenerPdoConexionBD();
 
 $sql = "
                SELECT
-                    p.id     AS p_id,
-                    p.nombre AS p_nombre,
-                    c.id     AS c_id,
-                    c.nombre AS c_nombre
+                    p.id        AS pId,
+                    p.nombre    AS pNombre,
+                    p.apellidos AS pApellidos, 
+                    c.id        AS cId,
+                    c.nombre    AS cNombre
                 FROM
                    persona AS p INNER JOIN categoria AS c
-                   ON p.categoria_id = c.id
+                   ON p.categoriaId = c.id
                 ORDER BY p.nombre
         ";
 
@@ -39,13 +40,18 @@ $resultSet = $select->fetchAll();
 
     <tr>
         <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Categoria</th>
+
     </tr>
 
     <?php
     foreach ($resultSet as $fila) { ?>
         <tr>
-            <td><a href='persona-ficha.php?id=<?=$fila["id"]?>'> <?=$fila?></a></td>
-            <td><a href='persona-eliminar.php?id=<?=$fila["id"]?>'> -Eliminar- </a></td>
+            <td><a    href='persona-ficha.php?id=<?=$fila["id"]?>'>  <?=$fila["pNombre"]?>      </a></td>
+            <td><a     href='persona-ficha.php?id=<?$fila["id"]?>'>  <?=$fila["pApellidos"]?>   </a></td>
+            <td><a     href='persona-ficha.php?id=<?$fila["id"]?>'>  <?$fila["categoriaId"]?>   </a></td>
+            <td><a href='persona-eliminar.php?id=<?=$fila["id"]?>'>  [X]                        </a></td>
         </tr>
     <?php } ?>
 
