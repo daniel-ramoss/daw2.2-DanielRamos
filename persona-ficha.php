@@ -84,7 +84,7 @@ $resultSetCategorias = $select->fetchAll();
 <br>
 
 <?php if (!$nuevaPersona){ ?>
-    <a href="persona-eliminar.php?id=<?=$id ?>">Eliminar persona</a>
+    <a href="persona-eliminar.php?id=<?=$id?>">Eliminar persona</a>
 <?php } ?>
 
 <br>
