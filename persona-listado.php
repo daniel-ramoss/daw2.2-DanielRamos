@@ -5,11 +5,12 @@ $conexion = obtenerPdoConexionBD();
 
 $sql = "
                SELECT
-                    p.id        AS pId,
-                    p.nombre    AS pNombre,
-                    p.apellidos AS pApellidos, 
-                    c.id        AS cId,
-                    c.nombre    AS cNombre,
+                    p.id          AS pId,
+                    p.nombre      AS pNombre,
+                    p.apellidos   AS pApellidos, 
+                    c.id          AS cId,
+                    c.nombre      AS cNombre,
+                    p.estrella    AS pEstrella,
                     p.categoriaId AS pCategoriaId
                 FROM
                    persona AS p INNER JOIN categoria AS c
@@ -42,6 +43,7 @@ $resultSet = $select->fetchAll();
     <tr>
         <th>Nombre</th>
         <th>Apellido</th>
+        <th>Favorito</th>
         <th>Categoria Id</th>
         <th>Categoria Nombre</th>
 
@@ -52,6 +54,16 @@ $resultSet = $select->fetchAll();
         <tr>
             <td><a     href='persona-ficha.php?id=<?=$fila["pId"]?>'>  <?=$fila["pNombre"]?>      </a></td>
             <td><a     href='persona-ficha.php?id=<?=$fila["pId"]?>'>  <?=$fila["pApellidos"]?>   </a></td>
+            <?php
+                if ($fila["pEstrella"]) {
+                    $urlImagen = "img/estrellaRellena.png";
+                    $parametroEstrella = "estrella";
+                } else {
+                    $urlImagen = "img/estrellaVacia.png";
+                    $parametroEstrella = "";
+                }
+            ?>
+            <td><a     href='persona-ficha.php?id=<?=$fila["pId"]?>'>  <?=$fila["pEstrella"]?>    </a><img src='$urlImagen' width='16' height='16'></td>
             <td><a     href='persona-ficha.php?id=<?=$fila["pId"]?>'>  <?=$fila["pCategoriaId"]?> </a></td>
             <td><a     href='persona-ficha.php?id=<?=$fila["pId"]?>'>  <?=$fila["cNombre"]?>      </a></td>
             <td><a  href='persona-eliminar.php?id=<?=$fila["pId"]?>'>  [X]                        </a></td>

@@ -11,9 +11,11 @@ if ($nuevaPersona) {
     $nombrePersona = "<introduzca nombre>";
     $apellidosPersona = "<introduzca apellidos>";
     $telefonoPersona = "<introduzca su teléfono>";
+    $estrellaPersona = false;
     $idCategoria = "<introduzca el id de la categoría a la que pertenece>";
+
 } else {
-    $sqlPersonas = "SELECT nombre, apellidos, telefono, categoriaId FROM persona WHERE id=?";
+    $sqlPersonas = "SELECT * FROM persona WHERE id=?";
 
     $select = $conexion->prepare($sqlPersonas);
     $select->execute([$id]);
@@ -22,17 +24,17 @@ if ($nuevaPersona) {
     $nombrePersona = $resultSetPersona[0]["nombre"];
     $apellidosPersona = $resultSetPersona[0]["apellidos"];
     $telefonoPersona = $resultSetPersona[0]["telefono"];
-    $idCategoria = $resultSetPersona[0]["categoriaId"];
+    $estrellaPersona = ($resultSetPersona[0]["estrella"] == 1); // En la BDD estáa como tinyint, así lo convertimos a boolean
+    $idCategoriaPersona = $resultSetPersona[0]["categoriaId"];
 }
 
 // Dejamos preparado un recordset con las categorías.
 
-$sqlCategorias = "SELECT id, nombre FROM categoria ORDER BY nombre";
+$sqlCategorias = "SELECT * FROM categoria ORDER BY nombre";
 
 $select = $conexion->prepare($sqlCategorias);
 $select->execute([]); // Array vacío porque la consulta preparada no requiere parámetros.
 $resultSetCategorias = $select->fetchAll();
-
 
 ?>
 
@@ -43,8 +45,6 @@ $resultSetCategorias = $select->fetchAll();
 <head>
     <meta charset="UTF-8">
 </head>
-
-
 
 <body>
 
@@ -58,20 +58,39 @@ $resultSetCategorias = $select->fetchAll();
     <input type='hidden' name='id' value='<?=$id?>' />
     <ul>
         <li>
-            <strong>Nombre: </strong>
+            <label for='nombre'> <strong>Nombre: </strong> </label>
             <input type='text' name='nombre' value='<?=$nombrePersona?>' />
         </li>
         <li>
-            <strong> Apellidos: </strong>
+            <label for='apellidos'> <strong> Apellidos: </strong> </label>
             <input type='text' name='apellidos' value='<?=$apellidosPersona?>' />
         </li>
         <li>
-            <strong>Teléfono: </strong>
+            <label for='telefono'> <strong>Teléfono: </strong> </label>
             <input type='tel' name='telefono' value='<?=$telefonoPersona?>'>
         </li>
         <li>
-            <strong>ID-Categoría: </strong>
-            <input type='number' name='categoriaId' value='<?=$idCategoria?>'>
+            <!-- Aquí se hace el select del nombre de la categoría  -->
+            <label for='categoriaId'> <strong>ID-Categoría: </strong> </label>
+            <select name='categoriaId'>
+                <?php
+                foreach ($resultSetCategorias as $filaCategorias) {
+                    $categoriaId = (int)$filaCategorias["id"];
+                    $nombreCategoria = $filaCategorias["nombre"];
+
+                    if ($categoriaId == $idCategoriaPersona){
+                        $seleccion = "selected = 'true' ";
+                    } else {
+                        $seleccion = "";
+                    }
+                    echo "<option value='$categoriaId' $seleccion> $nombreCategoria </option>";
+                }
+                ?>
+            </select>
+        </li>
+        <li>
+            <label for='estrella'> <strong>Favorito</strong> </label>
+            <input type='checkbox' name='estrella' <?= $estrellaPersona ? "checked" : "" ?> />
         </li>
     </ul>
 
