@@ -54,16 +54,19 @@ $resultSet = $select->fetchAll();
         <tr>
             <td><a     href='persona-ficha.php?id=<?=$fila["pId"]?>'>  <?=$fila["pNombre"]?>      </a></td>
             <td><a     href='persona-ficha.php?id=<?=$fila["pId"]?>'>  <?=$fila["pApellidos"]?>   </a></td>
+            <td> <!-- <a href='persona-ficha.php?id=<?=$fila["pId"]?>'> <?=$fila["pEstrella"]?>  </a>  Esta línea era provisional, hacia aparecer un 1 o un 0 en la columna favoritos-->
             <?php
+            echo "";
                 if ($fila["pEstrella"]) {
-                    $urlImagen = "img/estrellaRellena.png";
-                    $parametroEstrella = "estrella";
+                    $imagenEstrella = "estrellaRellena.png";
+                    $paramEstrella = "estrella";
                 } else {
-                    $urlImagen = "img/estrellaVacia.png";
-                    $parametroEstrella = "";
+                    $imagenEstrella = "estrellaVacia.png";
+                    $paramEstrella = "";
                 }
-            ?>
-            <td><a     href='persona-ficha.php?id=<?=$fila["pId"]?>'>  <?=$fila["pEstrella"]?>    </a><img src='$urlImagen' width='16' height='16'></td>
+            echo "<a href='persona-estado-estrella.php?$paramEstrella'><img src='$imagenEstrella' width='16' height='16'></a>";
+            ?></td>
+
             <td><a     href='persona-ficha.php?id=<?=$fila["pId"]?>'>  <?=$fila["pCategoriaId"]?> </a></td>
             <td><a     href='persona-ficha.php?id=<?=$fila["pId"]?>'>  <?=$fila["cNombre"]?>      </a></td>
             <td><a  href='persona-eliminar.php?id=<?=$fila["pId"]?>'>  [X]                        </a></td>
@@ -74,12 +77,19 @@ $resultSet = $select->fetchAll();
 
 <br>
 
-<a href="persona-ficha.php?id=-1">Crear Nueva Persona</a>
+<a href='persona-ficha.php?id=-1'>Crear Nueva Persona</a>
 
-<br>
-<br>
+<br><br>
 
-<a href="persona-listado.php">Gestionar listado de Personas</a>
+<a href='persona-listado.php'>Gestionar listado de Personas</a>
+
+<br><br>
+
+<a href='listado-persona-conEstrella.php'>Lista de Favoritos</a>
+
+<br><br>
+
+<a href='listado-persona-sinEstrella.php'>Lista de No Favoritos</a>
 
 </body>
 
