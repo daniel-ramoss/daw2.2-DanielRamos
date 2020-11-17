@@ -8,10 +8,10 @@ $sql = "
                     p.id          AS pId,
                     p.nombre      AS pNombre,
                     p.apellidos   AS pApellidos, 
-                    c.id          AS cId,
-                    c.nombre      AS cNombre,
                     p.estrella    AS pEstrella,
-                    p.categoriaId AS pCategoriaId
+                    p.categoriaId AS pCategoriaId,
+                    c.id          AS cId,
+                    c.nombre      AS cNombre
                 FROM
                    persona AS p INNER JOIN categoria AS c
                    ON p.categoriaId = c.id
