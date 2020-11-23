@@ -1,0 +1,11 @@
+TRABAJO FINAL EVALUACIÓN 1ª: CALENDARIO DE EXÁMENES.
+
+Este trabajo consiste en la realización de un calendario de exámenes. Hay 2 tablas que están relacionadas entre sí.
+La tabla de tipos de exámenes (la cual tiene un id para cada tipo de examen y un nombre) y está la tabla de exámenes
+(la cual contiene un nombre para el examen, una fecha, un id, si está aprobado o no y el id y el nombre del tipo de
+examen al que pertenecen).
+Su funcionamiento es prácticamente el mismo que el de la agenda de clase. Se pueden crear,modificar,guardar y eliminar
+tanto tipos de exámenes como exámenes.
+En las tablas de los exámenes se han incluido unas imágenes de un tick (que simboliza el aprobado) y una cruz
+(que simboliza el suspenso de ese examen, o la no realización del mismo, esta no realización se debe a la fecha del
+examen, si es una fecha no cumplida ese examen no se ha realizado todavía).
