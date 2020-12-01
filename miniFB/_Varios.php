@@ -5,7 +5,7 @@ declare(strict_types=1);
 function obtenerPdoConexionBD(): PDO
 {
     $servidor = "localhost";
-    $bd = "MiniFb";
+    $bd = "miniFb";
     $identificador = "root";
     $contrasenna = "";
     $opciones = [
@@ -80,7 +80,7 @@ function marcarSesionComoIniciada(array $arrayUsuario)
     // ...
 }
 
-function haySesionIniciada(): boolean // COMO REALIZAR LA COMPROBACIÓN
+function haySesionIniciada(): bool // COMO REALIZAR LA COMPROBACIÓN
 {
     $sesionIniciada=true;
     if(isset($_SESSION["id"])){
@@ -88,7 +88,7 @@ function haySesionIniciada(): boolean // COMO REALIZAR LA COMPROBACIÓN
         return $sesionIniciada;
     }else {
         $_SESSION["sesionIniciada"]=false;
-        return !$sesionIniciada;
+        return false;
     }
 
     // TODO Pendiente hacer la comprobación.
