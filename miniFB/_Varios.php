@@ -35,16 +35,7 @@ function obtenerUsuario(string $identificador, string $contrasenna): ?array
     $unaFilaAfectada = ($select->rowCount() == 1);
     $resultSet = $select->fetchAll();
 
-    if ($unaFilaAfectada) {
-        $identificador=$resultSet[0]["identificador"];
-        $id=$resultSet[0]["id"];
-        $nombre=$resultSet[0]["nombre"];
-        $apellidos=$resultSet[0]["apellidos"];
-        $array=[$id, $identificador, $nombre, $apellidos];
-        return $array;
-    } else {
-        return  "No se encuentra ese usuario...";
-    }
+    return $unaFilaAfectada ? $resultSet[0] : null;
 
     // TODO Pendiente hacer.
     // "SELECT * FROM Usuario WHERE identificador=? AND contrasenna=?"
@@ -56,24 +47,7 @@ function obtenerUsuario(string $identificador, string $contrasenna): ?array
 
 function marcarSesionComoIniciada(array $arrayUsuario)
 {
-    if(isset($_REQUEST["sesionIniciada"])){
-        $_SESSION["sesionIniciada"]= true;
-
-        $id=$arrayUsuario[0];
-        $_SESSION["id"]=$id;
-
-        $identificador=$arrayUsuario[1];
-        $_SESSION["identificador"]=$identificador;
-
-        $contrasenna=$arrayUsuario[2];
-        $_SESSION["contrasenna"]=$contrasenna;
-
-        $nombre=$arrayUsuario[3];
-        $_SESSION["nombre"]=$nombre;
-
-        $apellidos=$arrayUsuario[4];
-        $_SESSION["apellidos"]=$apellidos;
-    }
+    $_SESSION["id"]=$arrayUsuario[id];
 
     // TODO Anotar en el post-it todos estos datos:
     // $_SESSION["id"] = ...
