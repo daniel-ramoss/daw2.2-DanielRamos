@@ -2,15 +2,20 @@
 require_once "_Varios.php";
 
 $conexion=obtenerPdoConexionBD();
-$id=(int)$_REQUEST;
-if ($id>0 && haySesionIniciada()) {
+if (haySesionIniciada()) {
     $existeUsuario=true;
-    $usuario=obtenerUsuario();
 } else {
     $existeUsuario=false;
 }
-
-
+/*
+$usuario=obtenerUsuario(identificador, contrasenna);
+if ($usuario != null){
+    $existeUsuario=true;
+    marcarSesionComoIniciada();
+} else {
+    $existeUsuario=false;
+}
+*/
 
 ?>
 
@@ -25,49 +30,43 @@ if ($id>0 && haySesionIniciada()) {
 <body>
 
 <h1>Iniciar Sesión</h1>
+<form action='SesionInicioComprobar.php' method='post'>
+    <label><strong>NOMBRE USUARIO: </strong></label>
+    <input type='text' name='identificador' value='Usuario...'>
+    <br>
+    <label><strong>CONTRASEÑA: </strong></label>
+    <input type='text' name='contrasenna' value='Contraseña...'>
+    <br>
+    <input type='submit' name='iniciarSesion' value='Iniciar Sesión'>
+</form>
+<br>
 
-<?php if($existeUsuario){?> <!-- si existe el usuario aparecen nada mas identificador y contraseña -->
-        <form method='post' action='SesionInicioComprobar.php'>
-            <input type='hidden' name='id' value='<?=$usuario[0]?>'>
-                <ul>
-                    <li>
-                        <label><strong>IDENTIFICADOR</strong></label>
-                        <input type='text' name='identificador' value='<?=$usuario[1]?>'>
-                    </li>
-                    <li>
-                        <label><strong>CONTRASEÑA</strong></label>
-                        <input type='text' name='contrasenna' value='<?=$usuario[2]?>'>
-                    </li>
-                </ul>
-        </form>
-    <input type='submit' name='iniciaSesion' value='Iniciar Sesion'>
-<?php }else { ?> <!-- si no existe metemos parámetros nombre, apellidos, identificador y contraseña y guardamos en la BD -->
-        <form method='post' action='SesionInicioComprobar.php'>
-                <ul>
-                    <li>
-                        <label><strong>NOMBRE</strong></label>
-                        <input type='text' name='nombre' value='Introduce el nombre...'>
-                    </li>
-                    <li>
-                        <label><strong>APELLIDOS</strong></label>
-                        <input type='text' name='apellidos' value='Introduce los apellidos...'>
-                    </li>
-                    <li>
-                        <label><strong>IDENTIFICADOR</strong></label>
-                        <input type='text' name='identificador' value='Nombre usuario....'>
-                    </li>
-                    <li>
-                        <label><strong>CONTRASEÑA</strong></label>
-                        <input type='text' name='contrasenna' value='Contraseña....'>
-                    </li>
-                </ul>
-        </form>
-    <input type='submit' name='creaSesion' value='Crear Sesion'>
+<?php
+if (!haySesionIniciada()){?>
+    <form action='SesionInicioComprobar.php' method='post'>
+        <label><strong>NOMBRE: </strong></label>
+        <input type='text' name='nombre' value='Nombre Usuario...'>
+        <br>
+        <label><strong>APELLIDOS: </strong></label>
+        <input type='text' name='apellidos' value='Apellidos...'>
+        <br>
+        <label><strong>NOMBRE USUARIO: </strong></label>
+        <input type='text' name='identificador' value='Usuario...'>
+        <br>
+        <label><strong>CONTRASEÑA: </strong></label>
+        <input type='text' name='contrasenna' value='Contraseña...'>
+        <br>
+        <input type='submit' name='crearSesion' value='Crear Sesión'>
+    </form>
+    <br>
+
 <?php
 }
 ?>
+
 <br><br>
 <a href='ContenidoPublico1.php'>Mostrar Contenido Público</a>
+
 <!--
 llamad a los campos IGUAL que en la BD:
 identificador

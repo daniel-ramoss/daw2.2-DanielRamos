@@ -7,9 +7,11 @@ $arrayUsuario=obtenerUsuario($identificador,$contrasenna);
 
 if ($arrayUsuario != null) {
     marcarSesionComoIniciada($arrayUsuario);
+    redireccionar("ContenidoPrivado1.php");
 } else {
     redireccionar("SesionInicioMostrarFormulario.php");
 }
+
 // TODO ...$_REQUEST["..."]...
 // TODO Verificar (usar funciones de _Varios.php) identificador y contrasenna recibidos y redirigir a contenido1 (si OK) o a iniciar sesión (si NO ok).
 /*

@@ -31,7 +31,7 @@ function obtenerUsuario(string $identificador, string $contrasenna): ?array
     $conexion =obtenerPdoConexionBD();
     $sql ="SELECT * FROM usuario WHERE identificador=? AND contrasenna=?";
     $select = $conexion->prepare($sql);
-    $select->execute([]);
+    $select->execute([$identificador, $contrasenna]);
     $unaFilaAfectada = ($select->rowCount() == 1);
     $resultSet = $select->fetchAll();
 
@@ -47,8 +47,11 @@ function obtenerUsuario(string $identificador, string $contrasenna): ?array
 
 function marcarSesionComoIniciada(array $arrayUsuario)
 {
-    $_SESSION["id"]=$arrayUsuario[id];
-
+    $_SESSION["id"]=$arrayUsuario;
+    $_SESSION["identificador"]=$arrayUsuario;
+    $_SESSION["contrasenna"]=$arrayUsuario;
+    $_SESSION["nombre"]=$arrayUsuario;
+    $_SESSION["apellidos"]=$arrayUsuario;
     // TODO Anotar en el post-it todos estos datos:
     // $_SESSION["id"] = ...
     // ...
