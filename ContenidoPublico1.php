@@ -24,5 +24,7 @@
 <p>Sed dapibus arcu finibus, maximus justo eget, vestibulum turpis. Ut ut nibh egestas metus pretium pretium. Nulla efficitur vel mi quis rutrum. Nunc a condimentum nisl. Etiam venenatis efficitur dictum. Quisque a velit in mauris congue scelerisque a aliquet massa. Integer ultrices molestie nulla non dictum.</p>
 
 </body>
+<br><br>
+<a href='SesionInicioMostrarFormulario.php'>Iniciar Sesión</a>
 
 </html>

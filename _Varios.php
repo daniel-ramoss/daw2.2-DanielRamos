@@ -5,7 +5,7 @@ declare(strict_types=1);
 function obtenerPdoConexionBD(): PDO
 {
     $servidor = "localhost";
-    $bd = "MiniFb";
+    $bd = "miniFb";
     $identificador = "root";
     $contrasenna = "";
     $opciones = [
@@ -31,20 +31,11 @@ function obtenerUsuario(string $identificador, string $contrasenna): ?array
     $conexion =obtenerPdoConexionBD();
     $sql ="SELECT * FROM usuario WHERE identificador=? AND contrasenna=?";
     $select = $conexion->prepare($sql);
-    $select->execute([]);
+    $select->execute([$identificador, $contrasenna]);
     $unaFilaAfectada = ($select->rowCount() == 1);
     $resultSet = $select->fetchAll();
 
-    if ($unaFilaAfectada) {
-        $identificador=$resultSet[0]["identificador"];
-        $id=$resultSet[0]["id"];
-        $nombre=$resultSet[0]["nombre"];
-        $apellidos=$resultSet[0]["apellidos"];
-        $array=[$id, $identificador, $nombre, $apellidos];
-        return $array;
-    } else {
-        return  "No se encuentra ese usuario...";
-    }
+    return $unaFilaAfectada ? $resultSet[0] : null;
 
     // TODO Pendiente hacer.
     // "SELECT * FROM Usuario WHERE identificador=? AND contrasenna=?"
@@ -54,28 +45,26 @@ function obtenerUsuario(string $identificador, string $contrasenna): ?array
     //return ["id" => 17, "identificador" => "jlopez", ...];
 }
 
-function marcarSesionComoIniciada(int $id, string $identificador, string $nombre, string $apellidos)
+function marcarSesionComoIniciada(array $arrayUsuario)
 {
-    if(isset($_SESSION["sesionIniciada"])){
-        if(isset($_REQUEST["id"]) && isset($_REQUEST["identificador"])
-            && isset($_REQUEST["nombre"]) && isset($_REQUEST["apellidos"])){
-            $id=$_SESSION["id"];
-            $identificador=$_SESSION["identificador"];
-            $nombre=$_SESSION["nombre"];
-            $apellidos=$_SESSION["apellidos"];
-        }
-    }
-
+    $_SESSION["id"]=$arrayUsuario["id"];
+    $_SESSION["identificador"]=$arrayUsuario["identificador"];
+    $_SESSION["contrasenna"]=$arrayUsuario["contrasenna"];
+    $_SESSION["nombre"]=$arrayUsuario["nombre"];
+    $_SESSION["apellidos"]=$arrayUsuario["apellidos"];
     // TODO Anotar en el post-it todos estos datos:
     // $_SESSION["id"] = ...
     // ...
 }
 
-function haySesionIniciada(): boolean
+function haySesionIniciada(): bool // COMO REALIZAR LA COMPROBACIÓN
 {
+    $sesionIniciada=true;
     if(isset($_SESSION["id"])){
-        return true;
+        $_SESSION["sesionIniciada"]=true;
+        return $sesionIniciada;
     }else {
+        $_SESSION["sesionIniciada"]=false;
         return false;
     }
 
