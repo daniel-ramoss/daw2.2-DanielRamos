@@ -25,8 +25,7 @@ if (!haySesionIniciada()) {
     <meta charset='UTF-8'>
 </head>
 
-
-
+<?php pintarInfoSesion(); ?>
 <body>
 
 <h1>Contenido Privado 1</h1>
@@ -35,7 +34,7 @@ if (!haySesionIniciada()) {
 <p>Aliquam iaculis, ex eu gravida vulputate, orci nibh elementum augue, sit amet lacinia purus quam non augue. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam sed mi at purus ornare molestie. Praesent cursus pharetra tortor. Aliquam sit amet interdum est. Pellentesque vehicula dapibus placerat. Cras eu lorem id lectus ultricies interdum ut non mauris. Suspendisse malesuada elit id magna varius, quis ullamcorper nibh hendrerit. Fusce elit enim, ornare non ante ac, rutrum pharetra nibh.</p>
 <p>Aenean tempus risus elementum lacus dictum pellentesque. Curabitur dapibus laoreet consectetur. Nullam at velit vestibulum, viverra elit nec, pretium ex. In hac habitasse platea dictumst. Cras quis ex in est tristique elementum vel pretium ligula. Donec malesuada, felis vel pharetra ullamcorper, lorem est porttitor est, congue fringilla neque magna eget mi. Donec efficitur massa dolor, id interdum odio scelerisque vitae. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur mattis porta odio eget fermentum. Integer faucibus libero diam, nec rhoncus nisl cursus ac. Donec massa mi, aliquam a libero quis, dictum hendrerit dolor. Duis scelerisque mauris in nibh lacinia, at tristique lorem pharetra. Ut egestas quam ac ligula aliquam, a ullamcorper tellus lobortis. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec gravida ex sit amet tincidunt efficitur. Praesent at egestas felis.</p>
 <br><br>
-<a href='ContenidoPrivado2.php'>Siguente Página.</a>
+<a href='ContenidoPrivado2.php'>Siguente Página</a>
 <br><br>
 <a href='SesionCerrar.php'>Cerrar Sesión</a>
 </body>

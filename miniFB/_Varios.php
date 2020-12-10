@@ -47,11 +47,11 @@ function obtenerUsuario(string $identificador, string $contrasenna): ?array
 
 function marcarSesionComoIniciada(array $arrayUsuario)
 {
-    $_SESSION["id"]=$arrayUsuario;
-    $_SESSION["identificador"]=$arrayUsuario;
-    $_SESSION["contrasenna"]=$arrayUsuario;
-    $_SESSION["nombre"]=$arrayUsuario;
-    $_SESSION["apellidos"]=$arrayUsuario;
+    $_SESSION["id"]=$arrayUsuario["id"];
+    $_SESSION["identificador"]=$arrayUsuario["identificador"];
+    $_SESSION["contrasenna"]=$arrayUsuario["contrasenna"];
+    $_SESSION["nombre"]=$arrayUsuario["nombre"];
+    $_SESSION["apellidos"]=$arrayUsuario["apellidos"];
     // TODO Anotar en el post-it todos estos datos:
     // $_SESSION["id"] = ...
     // ...
@@ -76,10 +76,95 @@ function haySesionIniciada(): bool // COMO REALIZAR LA COMPROBACIÓN
 function cerrarSesion()
 {
     session_destroy();
-    session_unset();
+    unset($_SESSION);
 
     // TODO session_destroy() y unset (por si acaso).
 }
+
+function haySesionRamIniciada(): bool
+{
+    if(haySesionIniciada()){
+        return isset($_SESSION["id"]);
+    } else {
+        return false;
+    }
+    // Está iniciada si isset($_SESSION["id"])
+    //return isset($_SESSION["id"]);
+}
+
+function intentarCanjearSesionCookie(): bool
+{
+    if (isset($_COOKIE["identificador"]) && isset($_COOKIE["codigoCookie"])){
+        $conexion=obtenerPdoConexionBD();
+        $usuario=obtenerUsuario();
+        marcarSesionComoIniciada($usuario);
+        setcookie("identificador", "", time()+24*60*60);
+        setcookie("codigoCookie", "", time()+24*60*60);
+        return true;
+    } else {
+        setcookie("identificador", "", time()-3600);
+        setcookie("codigoCookie", "", time()-3600);
+        return false;
+    }
+    // TODO Comprobar si hay una "sesión-cookie" válida:
+    //   - Ver que vengan DOS cookies "identificador" y "codigoCookie".
+    //   - BD: SELECT ... WHERE identificador=? AND BINARY codigoCookie=?
+    //   - ¿Ha venido un registro? (Igual que el inicio de sesión)
+    //     · Entonces, se la canjeamos por una SESIÓN RAM INICIADA: marcarSesionComoIniciada($arrayUsuario)
+    //     · Además, RENOVAMOS (re-creamos) la cookie.
+    //   - IMPORTANTE: si las cookies NO eran válidas, tenemos que borrárselas.
+    //   - En cualquier caso, devolver true/false.
+}
+
+function pintarInfoSesion() {
+    if (haySesionRamIniciada()) {
+        echo "<span>Sesión iniciada por <a href='UsuarioPerfilVer.php'>$_SESSION[identificador]</a> ($_SESSION[nombre] $_SESSION[apellidos]) </span>";
+    } else {
+        echo "<a href='SesionInicioMostrarFormulario.php'>Iniciar sesión</a>";
+    }
+}
+
+function cerrarSesionRamYCookie()
+{
+    session_destroy();
+    unset($_SESSION); // Por si acaso
+}
+
+function generarCookieRecordar(array $arrayUsuario)
+{
+    $codigoCookie = generarCadenaAleatoria(32);
+    $conexion=obtenerPdoConexionBD();
+    $sql="UPDATE usuario SET codigoCookie=? WHERE id=?";
+    $parametros=[$codigoCookie, $arrayUsuario["id"]];
+    $sentencia = $conexion->prepare($sql);
+    $sqlConExito = $sentencia->execute($parametros);
+
+    setcookie("identificador", "", time()+24*60*60);
+    setcookie("codigoCookie", "", time()+24*60*60);
+
+
+    // Creamos un código cookie muy complejo (no necesariamente único).
+    //$codigoCookie = generarCadenaAleatoria(32); // Random...
+    // TODO guardar código en BD
+    // TODO Para una seguridad óptima convendría anotar en la BD la fecha de caducidad de la cookie y no aceptar ninguna cookie pasada dicha fecha.
+    // TODO Enviamos al cliente, en forma de cookies, el identificador y el codigoCookie: setcookie(...) ...
+}
+
+function borrarCookieRecordar(array $arrayUsuario)
+{
+    setcookie("identificador", "", time()-3600);
+    setcookie("codigoCookie", "", time()-3600);
+    // TODO Eliminar el código cookie de nuestra BD.
+
+    // TODO Pedir borrar cookie (setcookie con tiempo time() - negativo...)
+}
+
+function generarCadenaAleatoria(int $longitud): string
+{
+    for ($s = '', $i = 0, $z = strlen($a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789')-1; $i != $longitud; $x = rand(0,$z), $s .= $a[$x], $i++);
+    return $s;
+}
+
 
 // (Esta función no se utiliza en este proyecto pero se deja por si se optimizase el flujo de navegación.)
 // Esta función redirige a otra página y deja de ejecutar el PHP que la llamó:

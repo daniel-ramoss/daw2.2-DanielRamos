@@ -15,8 +15,7 @@ if(!haySesionIniciada()){
     <meta charset='UTF-8'>
 </head>
 
-
-
+<?php pintarInfoSesion(); ?>
 <body>
 
 <h1>Contenido Privado 2</h1>
