@@ -3,7 +3,7 @@
 require_once "_Varios.php";
 
 if(!haySesionIniciada()){
-    redireccionar("sesionInicioMostrarFormulario.php");
+    redireccionar("SesionInicioMostrarFormulario.php");
 }
 // TODO Hay que comprobar si hay sesión iniciada.
 //   - Si la hay, no intervenimos. Dejamos que la pág se cargue.
@@ -24,7 +24,6 @@ if (!haySesionIniciada()) {
 <head>
     <meta charset='UTF-8'>
 </head>
-
 <?php pintarInfoSesion(); ?>
 <body>
 

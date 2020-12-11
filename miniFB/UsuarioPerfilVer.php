@@ -18,4 +18,4 @@ require_once "_Varios.php";
 
 </body>
 
-</html>
+</html

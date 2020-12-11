@@ -1,7 +1,7 @@
 <?php
 require_once "_Varios.php";
 if(!haySesionIniciada()){
-    redireccionar("sesionInicioMostrarFormulario.php");
+    redireccionar("SesionInicioMostrarFormulario.php");
 }
 // TODO Ídem.
 
@@ -13,8 +13,8 @@ if(!haySesionIniciada()){
 
 <head>
     <meta charset='UTF-8'>
-</head>
 
+</head>
 <?php pintarInfoSesion(); ?>
 <body>
 
@@ -31,3 +31,4 @@ if(!haySesionIniciada()){
 </body>
 
 </html>
+

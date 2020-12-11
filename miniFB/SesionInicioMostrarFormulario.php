@@ -30,6 +30,7 @@ if ($usuario != null){
 <body>
 
 <h1>Iniciar Sesión</h1>
+
 <form action='SesionInicioComprobar.php' method='post'>
     <label><strong>NOMBRE USUARIO: </strong></label>
     <input type='text' name='identificador' value='Usuario...'>
@@ -42,7 +43,8 @@ if ($usuario != null){
     <br><br>
     <input type='submit' name='iniciarSesion' value='Iniciar Sesión'>
 </form>
-<br>
+
+<br><br>
 <a href='ContenidoPublico1.php'>Mostrar Contenido Público</a>
 
 <!--
@@ -53,3 +55,5 @@ contrasenna
 </body>
 
 </html>
+
+

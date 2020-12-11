@@ -1,11 +1,13 @@
 <?php
 
+
 declare(strict_types=1);
+
 
 function obtenerPdoConexionBD(): PDO
 {
     $servidor = "localhost";
-    $bd = "miniFb";
+    $bd = "MiniFb";
     $identificador = "root";
     $contrasenna = "";
     $opciones = [
@@ -24,12 +26,30 @@ function obtenerPdoConexionBD(): PDO
     return $conexion;
 }
 
+// (Esta función no se utiliza en este proyecto pero se deja por si se optimizase el flujo de navegación.)
+// Esta función redirige a otra página y deja de ejecutar el PHP que la llamó:
+function redireccionar(string $url)
+{
+    header("Location: $url");
+    exit;
+}
+
+
+// (Esta función no se utiliza en este proyecto pero se deja por si se optimizase el flujo de navegación.)
+function syso(string $contenido)
+{
+    file_put_contents('php://stderr', $contenido . "\n");
+}
+
+//////////////////////////////////////////////////// FUNCIONES PARA SESIONES
+
 session_start(); // iniciamos la sesion
+
 
 function obtenerUsuario(string $identificador, string $contrasenna): ?array
 {
     $conexion =obtenerPdoConexionBD();
-    $sql ="SELECT * FROM usuario WHERE identificador=? AND contrasenna=?";
+    $sql ="SELECT * FROM Usuario WHERE identificador=? AND contrasenna=?";
     $select = $conexion->prepare($sql);
     $select->execute([$identificador, $contrasenna]);
     $unaFilaAfectada = ($select->rowCount() == 1);
@@ -45,6 +65,7 @@ function obtenerUsuario(string $identificador, string $contrasenna): ?array
     //return ["id" => 17, "identificador" => "jlopez", ...];
 }
 
+
 function marcarSesionComoIniciada(array $arrayUsuario)
 {
     $_SESSION["id"]=$arrayUsuario["id"];
@@ -56,6 +77,7 @@ function marcarSesionComoIniciada(array $arrayUsuario)
     // $_SESSION["id"] = ...
     // ...
 }
+
 
 function haySesionIniciada(): bool // COMO REALIZAR LA COMPROBACIÓN
 {
@@ -73,13 +95,18 @@ function haySesionIniciada(): bool // COMO REALIZAR LA COMPROBACIÓN
     //return false;
 }
 
+
 function cerrarSesion()
 {
     session_destroy();
     unset($_SESSION);
+    setcookie("identificador", "");
+    setcookie("codigoCookie", "");
 
     // TODO session_destroy() y unset (por si acaso).
 }
+
+///////////////////////////////////////////////// COOKIES
 
 function haySesionRamIniciada(): bool
 {
@@ -92,14 +119,15 @@ function haySesionRamIniciada(): bool
     //return isset($_SESSION["id"]);
 }
 
+
 function intentarCanjearSesionCookie(): bool
 {
     if (isset($_COOKIE["identificador"]) && isset($_COOKIE["codigoCookie"])){
         $conexion=obtenerPdoConexionBD();
         $usuario=obtenerUsuario();
         marcarSesionComoIniciada($usuario);
-        setcookie("identificador", "", time()+24*60*60);
-        setcookie("codigoCookie", "", time()+24*60*60);
+        setcookie("identificador", $usuario["identificador"], time()+60);
+        setcookie("codigoCookie", $usuario["codigoCookie"], time()+60);
         return true;
     } else {
         setcookie("identificador", "", time()-3600);
@@ -116,7 +144,9 @@ function intentarCanjearSesionCookie(): bool
     //   - En cualquier caso, devolver true/false.
 }
 
-function pintarInfoSesion() {
+
+function pintarInfoSesion()
+{
     if (haySesionRamIniciada()) {
         echo "<span>Sesión iniciada por <a href='UsuarioPerfilVer.php'>$_SESSION[identificador]</a> ($_SESSION[nombre] $_SESSION[apellidos]) </span>";
     } else {
@@ -124,23 +154,23 @@ function pintarInfoSesion() {
     }
 }
 
-function cerrarSesionRamYCookie()
-{
-    session_destroy();
-    unset($_SESSION); // Por si acaso
-}
 
 function generarCookieRecordar(array $arrayUsuario)
 {
     $codigoCookie = generarCadenaAleatoria(32);
     $conexion=obtenerPdoConexionBD();
-    $sql="UPDATE usuario SET codigoCookie=? WHERE id=?";
-    $parametros=[$codigoCookie, $arrayUsuario["id"]];
+    $sql="UPDATE Usuario SET codigoCookie=? WHERE identificador=?";
+    $parametros=[$codigoCookie, $arrayUsuario["identificador"]];
     $sentencia = $conexion->prepare($sql);
     $sqlConExito = $sentencia->execute($parametros);
 
-    setcookie("identificador", "", time()+24*60*60);
-    setcookie("codigoCookie", "", time()+24*60*60);
+    if ($sqlConExito){
+        $arrayUsuario["codigoCookie"]=$codigoCookie;
+        setcookie("identificador", $arrayUsuario["identificador"], time()+(60));
+        setcookie("codigoCookie", $codigoCookie, time()+(60));
+    }
+
+
 
 
     // Creamos un código cookie muy complejo (no necesariamente único).
@@ -152,29 +182,31 @@ function generarCookieRecordar(array $arrayUsuario)
 
 function borrarCookieRecordar(array $arrayUsuario)
 {
-    setcookie("identificador", "", time()-3600);
-    setcookie("codigoCookie", "", time()-3600);
-    // TODO Eliminar el código cookie de nuestra BD.
+    $conexion=obtenerPdoConexionBD();
+    $sql="DELETE FROM Usuario WHERE codigoCookie=?";
+    $parametros=[$arrayUsuario["codigoCookie"]];
+    $sentencia = $conexion->prepare($sql);
+    $sqlConExito = $sentencia->execute($parametros);
 
+    if ($sqlConExito) {
+        setcookie("identificador", "", time()-3600);
+        setcookie("codigoCookie", "", time()-3600);
+    }
+
+
+    // TODO Eliminar el código cookie de nuestra BD.
     // TODO Pedir borrar cookie (setcookie con tiempo time() - negativo...)
 }
 
-function generarCadenaAleatoria(int $longitud): string
+
+function generarCadenaAleatoria($longitud): string
 {
     for ($s = '', $i = 0, $z = strlen($a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789')-1; $i != $longitud; $x = rand(0,$z), $s .= $a[$x], $i++);
     return $s;
 }
 
 
-// (Esta función no se utiliza en este proyecto pero se deja por si se optimizase el flujo de navegación.)
-// Esta función redirige a otra página y deja de ejecutar el PHP que la llamó:
-function redireccionar(string $url)
-{
-    header("Location: $url");
-    exit;
-}
 
-function syso(string $contenido)
-{
-    file_put_contents('php://stderr', $contenido . "\n");
-}
+
+
+
