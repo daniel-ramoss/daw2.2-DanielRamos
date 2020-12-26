@@ -1,38 +1,34 @@
 <?php
-
 require_once "_com/Dao.php";
+require_once "_com/_Varios.php";
+require_once "_com/Utilidades.php";
+
+$conexionBD = obtenerPdoConexionBD();
 
 $id = (int)$_REQUEST["id"];
 
 $resultado=DAO::categoriaEliminar($id);
 
-$conexionBD=obtenerPdoConexionBD();
 
-$sql = "DELETE FROM Categoria WHERE id=?";
+$sql = "DELETE FROM categoria WHERE id=?";
 
 $sentencia = $conexionBD->prepare($sql);
 
-$sqlConExito = $sentencia->execute([$id]);
+$sqlConExito = $sentencia->execute([$id]); // Se añade el parámetro a la consulta preparada.
 
 $correctoNormal = ($sqlConExito && $sentencia->rowCount() == 1);
 
 $noExistia = ($sqlConExito && $sentencia->rowCount() == 0);
 
+
 ?>
+
 
 
 <html>
 
 <head>
     <meta charset='UTF-8'>
-</head>
-
-
-
-<html>
-
-<head>
-    <meta charset="UTF-8">
 </head>
 
 
@@ -56,7 +52,7 @@ $noExistia = ($sqlConExito && $sentencia->rowCount() == 0);
 
 <?php } ?>
 
-<a href="CategoriaListado.php">Volver al listado de categorías.</a>
+<a href='CategoriaListado.php'>Volver al listado de categorías.</a>
 
 </body>
 

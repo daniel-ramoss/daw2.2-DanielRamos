@@ -1,114 +1,135 @@
 <?php
-
 require_once "_com/Dao.php";
+require_once "_com/_Varios.php";
+require_once "_com/Utilidades.php";
 
 $conexion = obtenerPdoConexionBD();
 
 $id = (int)$_REQUEST["id"];
 
-$nuevaPersona = ($id == -1);
+$nuevaEntrada = ($id == -1);
 
-if ($nuevaPersona) {
-    $nombrePersona = "<introduzca nombre>";
-    $apellidosPersona = "<introduzca apellidos>";
-    $telefonoPersona = "<introduzca su teléfono>";
-    $estrellaPersona = false;
-    $idCategoria = "<introduzca el id de la categoría a la que pertenece>";
-
+if ($nuevaEntrada) {
+    $personaNombre = "<introduzca nombre>";
+    $personaApellidos = "<introduzca apellidos>";
+    $personaTelefono = "<introduzca teléfono>";
+    $personaEstrella = false;
+    $personaCategoriaId = 0;
 } else {
-    $sqlPersonas = "SELECT * FROM persona WHERE id=?";
+    $sqlPersona = "SELECT * FROM persona WHERE id=?";
 
-    $select = $conexion->prepare($sqlPersonas);
+    $select = $conexion->prepare($sqlPersona);
     $select->execute([$id]);
-    $resultSetPersona = $select->fetchAll();
+    $rsPersona = $select->fetchAll();
 
-    $nombrePersona = $resultSetPersona[0]["nombre"];
-    $apellidosPersona = $resultSetPersona[0]["apellidos"];
-    $telefonoPersona = $resultSetPersona[0]["telefono"];
-    $estrellaPersona = ($resultSetPersona[0]["estrella"] == 1); // En la BDD estáa como tinyint, así lo convertimos a boolean
-    $idCategoriaPersona = $resultSetPersona[0]["categoriaId"];
+    $personaNombre = $rsPersona[0]["nombre"];
+    $personaApellidos = $rsPersona[0]["apellidos"];
+    $personaTelefono = $rsPersona[0]["telefono"];
+    $personaEstrella = ($rsPersona[0]["estrella"] == 1);
+    $personaCategoriaId = $rsPersona[0]["categoriaId"];
+
+    $resultado=DAO::personaCrear($id, $personaNombre, $personaApellidos, $personaTelefono, $personaCategoriaId, $personaEstrella );
 }
 
-// Dejamos preparado un recordset con las categorías.
 
-$sqlCategorias = "SELECT * FROM categoria ORDER BY nombre";
+
+// Con lo siguiente se deja preparado un recordset con todas las categorías.
+
+$sqlCategorias = "SELECT id, nombre FROM categoria ORDER BY nombre";
 
 $select = $conexion->prepare($sqlCategorias);
 $select->execute([]); // Array vacío porque la consulta preparada no requiere parámetros.
-$resultSetCategorias = $select->fetchAll();
+$rsCategorias = $select->fetchAll();
 
+
+
+// INTERFAZ:
+// $personaNombre
+// $personaTelefono
+// $personaApellidos
+// $personaEstrella
+// $personaCategoriaId
+// $rsCategorias
 ?>
+
 
 
 
 <html>
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset='UTF-8'>
 </head>
+
+
 
 <body>
 
-<?php if ($nuevaPersona) { ?>
-    <h1>Nueva Persona</h1>
+<?php if ($nuevaEntrada) { ?>
+    <h1>Nueva ficha de persona</h1>
 <?php } else { ?>
     <h1>Ficha de persona</h1>
 <?php } ?>
 
 <form method='post' action='PersonaGuardar.php'>
-    <input type='hidden' name='id' value='<?=$id?>' />
-    <ul>
-        <li>
-            <label for='nombre'> <strong>Nombre: </strong> </label>
-            <input type='text' name='nombre' value='<?=$nombrePersona?>' />
-        </li>
-        <li>
-            <label for='apellidos'> <strong> Apellidos: </strong> </label>
-            <input type='text' name='apellidos' value='<?=$apellidosPersona?>' />
-        </li>
-        <li>
-            <label for='telefono'> <strong>Teléfono: </strong> </label>
-            <input type='tel' name='telefono' value='<?=$telefonoPersona?>'>
-        </li>
-        <li>
-            <!-- Aquí se hace el select del nombre de la categoría  -->
-            <label for='categoriaId'> <strong>ID-Categoría: </strong> </label>
-            <select name='categoriaId'>
-                <?php
-                foreach ($resultSetCategorias as $filaCategorias) {
-                    $categoriaId = (int)$filaCategorias["id"];
-                    $nombreCategoria = $filaCategorias["nombre"];
 
-                    if ($categoriaId == $idCategoriaPersona){
-                        $seleccion = "selected = 'true' ";
-                    } else {
-                        $seleccion = "";
-                    }
-                    echo "<option value='$categoriaId' $seleccion> $nombreCategoria </option>";
-                }
-                ?>
-            </select>
-        </li>
-        <li>
-            <label for='estrella'> <strong>Favorito</strong> </label>
-            <input type='checkbox' name='estrella' <?= $estrellaPersona ? "checked" : "" ?> />
-        </li>
-    </ul>
+    <input type='hidden' name='id' value='<?= $id ?>' />
 
-    <?php if ($nuevaPersona) { ?>
-        <input type='submit' name='crear-persona' value='Crear persona' />
+    <label for='nombre'>Nombre</label>
+    <input type='text' name='nombre' value='<?=$personaNombre ?>' />
+    <br/>
+
+    <label for='apellidos'> Apellidos</label>
+    <input type='text' name='apellidos' value='<?=$personaApellidos ?>' />
+    <br/>
+
+    <label for='telefono'> Teléfono</label>
+    <input type='text' name='telefono' value='<?=$personaTelefono ?>' />
+    <br/>
+
+    <label for='categoriaId'>Categoría</label>
+    <select name='categoriaId'>
+        <?php
+        foreach ($rsCategorias as $filaCategoria) {
+            $categoriaId = (int) $filaCategoria["id"];
+            $categoriaNombre = $filaCategoria["nombre"];
+
+            if ($categoriaId == $personaCategoriaId) $seleccion = "selected='true'";
+            else                                     $seleccion = "";
+
+            echo "<option value='$categoriaId' $seleccion>$categoriaNombre</option>";
+
+            // Alternativa (peor):
+            // if ($categoriaId == $personaCategoriaId) echo "<option value='$categoriaId' selected='true'>$categoriaNombre</option>";
+            // else                                     echo "<option value='$categoriaId'                >$categoriaNombre</option>";
+        }
+        ?>
+    </select>
+    <br/>
+
+    <label for='estrella'>Estrellado</label>
+    <input type='checkbox' name='estrella' <?= $personaEstrella ? "checked" : "" ?> />
+    <br/>
+
+    <br/>
+
+    <?php if ($nuevaEntrada) { ?>
+        <input type='submit' name='crear' value='Crear persona' />
     <?php } else { ?>
         <input type='submit' name='guardar' value='Guardar cambios' />
     <?php } ?>
-</form>
-<br>
 
-<?php if (!$nuevaPersona){ ?>
-    <a href="PersonaEliminar.php?id=<?=$id?>">Eliminar persona</a>
+</form>
+
+<?php if (!$nuevaEntrada) { ?>
+    <br />
+    <a href='PersonaEliminar.php?id=<?=$id ?>'>Eliminar persona</a>
 <?php } ?>
 
-<br>
-<a href="PersonaListado.php">Volver a la lista de Personas.</a>
+<br />
+<br />
+
+<a href='PersonaListado.php'>Volver al listado de personas.</a>
 
 </body>
 

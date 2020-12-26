@@ -47,14 +47,18 @@ class Persona extends Dato
     use Identificable;
 
     private $nombre;
+    private $apellidos;
+    private $telefono;
+    private $categoriaId;
+    private $estrella;
 
-    function __construct(int $id=null, string $nombre)
+    function __construct(int $id=null, string $nombre, string $apellidos, int $telefono, int $categoriaId, bool $estrella)
     {
-        if ($id != null && $nombre == null) { // Cargar de BD
-            // TODO obtener info de la BD usando el id.
+        if ($id != null && $nombre == null) {
+            DAO::personaObtenerPorId($id);
         } else if ($id == null && $nombre != null) { // Crear en BD
-           DAO::agregarProducto($nombre,$descripcion,$precio);
-        } else { // No hacemos nada con la BD (debe venir todo relleno)
+            DAO::personaCrear($nombre, $apellidos,$telefono,$categoriaId,$estrella);
+        } else {
             $this->id = $id;
             $this->nombre = $nombre;
         }
@@ -71,178 +75,45 @@ class Persona extends Dato
         $this->nombre = $nombre;
     }
 
-    public function getDescripcion(): string
+    public function getApellidos(): string
     {
-        return $this->descripcion;
+        return $this->apellidos;
     }
 
-    public function setDescripcion(string $descripcion): void
+    public function setApellidos(string $apellidos): void
     {
-        $this->descripcion = $descripcion;
+        $this->apellidos = $apellidos;
     }
 
-    public function getPrecio(): float
+    public function getTelefono(): float
     {
-        return $this->precio;
+        return $this->telefono;
     }
 
-    public function setPrecio(float $precio): void
+    public function setTelefono(int $telefono): int
     {
-        $this->precio = $precio;
+        $this->telefono = $telefono;
     }
 
-    public function generarPrecioFormateado(): string
+    public function getCategoriaId(): int
     {
-        return number_format ($this->getPrecio(), 2) . "€";
+        return $this->categoriaId;
+    }
+
+    public function setCategoriaId(int $categoriaId): int
+    {
+        $this->categoriaId = $categoriaId;
+    }
+
+    public function getEstrella(): bool
+    {
+        return $this->estrella;
+    }
+
+    public function setEstrella(bool $estrella): bool
+    {
+        $this->estrella = $estrella;
     }
 }
 
-abstract class ProtoPedido extends Dato
-{
 
-    protected $cliente_id;
-    protected $lineas;
-
-    public function __construct(int $cliente_id, $lineas)
-    {
-        $this->cliente_id = $cliente_id;
-        $this->lineas = $lineas;
-    }
-
-    public function getClienteId(): int
-    {
-        return $this->cliente_id;
-    }
-
-    public function setClienteId(int $cliente_id)
-    {
-        $this->cliente_id = $cliente_id;
-    }
-
-    public function getLineas(): array
-    {
-        return $this->lineas;
-    }
-
-    public function setLineas(array $lineas): void
-    {
-        $this->lineas = $lineas;
-    }
-
-
-}
-
-class Carrito extends ProtoPedido {
-
-    public function __construct(int $cliente_id, $lineas)
-    {
-        parent::__construct($cliente_id, $lineas);
-    }
-    //TODO VER ESTO A VER  SI FUNCIONA
-    public function variarProducto($productoId, $variacionUnidades) {
-        $nuevaCantidadUnidades = DAO::carritoVariarUnidadesProducto($productoId, $variacionUnidades);
-
-        $lineas = $this->getLineas();
-        $lineaNueva= new LineaCarrito($productoId, $nuevaCantidadUnidades);
-        array_push($lineas, $lineaNueva);
-        $this->setLineas($lineas);
-    }
-}
-
-class Pedido extends ProtoPedido {
-    use Identificable;
-
-    private  $direccionEnvio;
-    private  $fechaConfirmacion; // $now = date("Y-m-d H:i:s"); tendriamos en la variable 2020-09-01 11:48 y es compatible con datetime de mysql
-
-    public function __constructPedido(int $id, int $cliente_id, string $direccionEnvio, object $fechaConfirmacion, array $lineas)
-    {
-        parent::__construct($cliente_id, $lineas);
-
-        $this->setId($id);
-        $this->setDireccionEnvio($direccionEnvio);
-        $this->getFechaConfirmacion($fechaConfirmacion);
-    }
-
-    public function getDireccionEnvio()
-    {
-        return $this->direccionEnvio;
-    }
-
-    public function setDireccionEnvio($direccionEnvio)
-    {
-        $this->direccionEnvio = $direccionEnvio;
-    }
-
-    public function getFechaConfirmacion()
-    {
-        return $this->fechaConfirmacion;
-    }
-
-    public function setFechaConfirmacion($fechaConfirmacion)
-    {
-        $this->fechaConfirmacion = $fechaConfirmacion;
-    }
-}
-
-abstract class ProtoLinea
-{
-    protected $producto_id;
-    protected $unidades;
-
-    public function __construct(int $producto_id, int $unidades)
-    {
-        $this->producto_id = $producto_id;
-        $this->unidades = $unidades;
-    }
-
-    public function getProductoId()
-    {
-        return $this->producto_id;
-    }
-
-    public function setProductoId($producto_id)
-    {
-        $this->producto_id = $producto_id;
-    }
-
-    public function getUnidades()
-    {
-        return $this->unidades;
-    }
-
-    public function setUnidades($unidades)
-    {
-        $this->unidades = $unidades;
-    }
-}
-
-class LineaCarrito extends ProtoLinea
-{
-    public function __construct(int $producto_id, int $unidades)
-    {
-        parent::__construct($producto_id, $unidades);
-    }
-}
-
-class LineaPedido extends ProtoLinea
-{
-    private  $precioUnitario;
-
-    public function __construct(int $producto_id, int $unidades, float $precioUnitario)
-    {
-        parent::__construct($producto_id, $unidades);
-
-        $this->setPrecioUnitario($precioUnitario);
-    }
-
-    public function getPrecioUnitario()
-    {
-        return $this->precioUnitario;
-    }
-
-    public function setPrecioUnitario($precioUnitario)
-    {
-        $this->precioUnitario = $precioUnitario;
-    }
-}

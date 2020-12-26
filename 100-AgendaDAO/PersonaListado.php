@@ -1,6 +1,7 @@
 <?php
-
 require_once "_com/Dao.php";
+require_once "_com/_Varios.php";
+require_once "_com/Utilidades.php";
 
 $conexion = obtenerPdoConexionBD();
 
@@ -23,7 +24,7 @@ $sql = "
                     c.id     AS cId,
                     c.nombre AS cNombre
                 FROM
-                   Persona AS p INNER JOIN Categoria AS c
+                   persona AS p INNER JOIN categoria AS c
                    ON p.categoriaId = c.id
                 $posibleClausulaWhere
                 ORDER BY p.nombre
@@ -33,10 +34,6 @@ $select = $conexion->prepare($sql);
 $select->execute([]); // Array vacío porque la consulta preparada no requiere parámetros.
 $rs = $select->fetchAll();
 
-
-// INTERFAZ:
-// $rs
-// $_SESSION
 ?>
 
 
