@@ -92,8 +92,8 @@ class Publicacion extends Dato
     private $asunto;
     private $contenido;
 
-    public function __construct(int $idPublicacion, string $fecha, int $emisorId, int $destinatarioId,
-                                string $destacadaHasta, string $asunto, string $contenido)
+    public function __construct(int $idPublicacion, DateTime $fecha, int $emisorId, int $destinatarioId,
+                                 DateTime $destacadaHasta, string $asunto, string $contenido)
     {
         $this->setIdPublicacion($idPublicacion);
         $this->setFecha($fecha);
@@ -114,12 +114,12 @@ class Publicacion extends Dato
         $this->idPublicacion = $idPublicacion;
     }
 
-    public function getFecha(): string
+    public function getFecha(): DateTime
     {
         return $this->fecha;
     }
 
-    public function setFecha(sting $fecha)
+    public function setFecha(DateTime $fecha)
     {
         $this->fecha = $fecha;
     }
@@ -134,24 +134,31 @@ class Publicacion extends Dato
         $this->emisorId = $emisorId;
     }
 
-    public function getDEstinatarioId(): int
+    public function getDestinatarioId(): int
     {
         return $this->destinatarioId;
     }
 
     public function setDestinatarioId(int $destinarioId)
     {
-        $this->destinatarioId = $destinarioId;
+        if ($destinarioId!=null)
+            $this->destinatarioId = $destinarioId;
+        else if ($destinarioId==null)
+            $this->destinatarioId = null;
+
     }
 
-    public function getDestacadaHasta(): string
+    public function getDestacadaHasta(): DateTime
     {
         return $this->destacadaHasta;
     }
 
-    public function setDestacadaHasta(string $destacadoHasta)
+    public function setDestacadaHasta(DateTime $destacadoHasta)
     {
-        $this->destacadaHasta = $destacadoHasta;
+        if ($destacadoHasta!=null)
+            $this->destacadaHasta = $destacadoHasta;
+        elseif ($destacadoHasta==null)
+            $this->destacadaHasta = null;
     }
 
     public function getAsunto(): string

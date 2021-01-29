@@ -108,8 +108,9 @@ class DAO
 
     private static function publicacionCrearDesdeRs(array $fila): Publicacion
     {
-        return new Publicacion($fila["idPublicacion"], $fila["fecha"], $fila["emisorId"], $fila["destinatarioId"],
-            $fila["destacadaHasta"], $fila["asunto"], $fila["contenido"]);
+        return new Publicacion($fila["id"], new DateTime($fila["fecha"]), $fila["emisorId"],
+                               $fila["destinatarioId"],  $fila["destacadaHasta"],
+                               $fila["asunto"],          $fila["contenido"]);
     }
 
     public static function publicacionObtenerPorId(int $id): ?Publicacion
@@ -156,4 +157,21 @@ class DAO
 
         return $datos;
     }
+
+    public static function publicacionObtenerSinDestinatario(): array
+    {
+        $datos = [];
+        $rs = self::ejecutarConsulta(
+            "SELECT * FROM Publicacion WHERE destinatarioId IS NULL ORDER BY fecha"
+        ,[]);
+
+        foreach ($rs as $fila) {
+            $publicacion = self::publicacionCrearDesdeRs($fila);
+            array_push($datos, $publicacion);
+        }
+
+        return $datos;
+    }
+
+
 }
