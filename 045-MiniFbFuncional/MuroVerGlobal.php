@@ -43,19 +43,24 @@ $publicaciones=DAO::publicacionObtenerSinDestinatario();
         <td>Id Destinatario</td>
         <td>Asunto</td>
         <td>Contenido</td>
-        <?php foreach ($publicaciones as $publicacion) { ?>
+        <?php foreach ($publicaciones as $publicacion) {
+            $fechaDatetime=$publicacion->getFecha();
+            $fechaString=$fechaDatetime->format('Y-m-d H:i:s');
+        ?>
     <tr>
-        <td><?=$publicacion->getIdPublicacion()?></td>
-        <td><?=$publicacion->getFecha()?></td>
-        <td><?=$publicacion->getEmisorId()?></td>
-        <td><?=$publicacion->getDestinatarioId()?></td>
-        <td><?=$publicacion->getAsunto()?></td>
-        <td><?=$publicacion->getContenido()?></td>
+        <td><?=$publicacion->getIdPublicacion()?>   </td>
+        <td><?=$fechaString?>                       </td>
+        <td><?=$publicacion->getEmisorId()?>        </td>
+        <td><?=$publicacion->getDestinatarioId()?>  </td>
+        <td><?=$publicacion->getAsunto()?>          </td>
+        <td><?=$publicacion->getContenido()?>       </td>
     <?php } ?>
     </tr>
 </table>
-
-<a href='MuroVerDe.php'>Ir a mi muro.</a>
+<br><br>
+<a href='MuroVerDe.php'>Ir a mi muro</a>
+<br><br>
+<a href='Index.php'>Volver al Inicio</a>
 
 </body>
 

@@ -173,5 +173,17 @@ class DAO
         return $datos;
     }
 
+    public static function publicacionObtenerPrivado(int $id): array
+    {
+        $datos = [];
+        $rs = self::ejecutarConsulta("SELECT * FROM Publicacion WHERE destinatarioId=? ORDER BY fecha",[$id]);
+
+        foreach ($rs as $fila) {
+            $publicacion = self::publicacionCrearDesdeRs($fila);
+            array_push($datos, $publicacion);
+        }
+
+        return $datos;
+    }
 
 }

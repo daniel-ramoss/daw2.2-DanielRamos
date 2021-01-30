@@ -92,14 +92,16 @@ class Publicacion extends Dato
     private $asunto;
     private $contenido;
 
-    public function __construct(int $idPublicacion, DateTime $fecha, int $emisorId, int $destinatarioId,
-                                 DateTime $destacadaHasta, string $asunto, string $contenido)
+    public function __construct(int $idPublicacion, DateTime $fecha, int $emisorId,  $destinatarioId,
+                                   $destacadaHasta, string $asunto, string $contenido)
     {
         $this->setIdPublicacion($idPublicacion);
         $this->setFecha($fecha);
         $this->setEmisorId($emisorId);
-        $this->setDestinatarioId($destinatarioId);
-        $this->setDestacadaHasta($destacadaHasta);
+        //$this->setDestinatarioId($destinatarioId);
+        $this->destinatarioId=$destinatarioId;
+        //$this->setDestacadaHasta($destacadaHasta);
+        $this->destacadaHasta=$destacadaHasta;
         $this->setAsunto($asunto);
         $this->setContenido($contenido);
     }
@@ -134,9 +136,13 @@ class Publicacion extends Dato
         $this->emisorId = $emisorId;
     }
 
-    public function getDestinatarioId(): int
+    public function getDestinatarioId():  int
     {
-        return $this->destinatarioId;
+        if ($this->destinatarioId != null)
+            return $this->destinatarioId;
+        else
+            return 0;
+        //  HE MODIFICADO ESTO PARA QUE CUANDO EL DESTINATARIO DEL MENSAJE SEA NULL QUE LO PONGA A 0 EN LUGAR DE NULL
     }
 
     public function setDestinatarioId(int $destinarioId)
