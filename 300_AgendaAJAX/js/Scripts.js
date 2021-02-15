@@ -5,18 +5,19 @@ var tablaCategorias;
 
 
 function inicializaciones() {
+    //alert("Iniciando --> inicializaciones()");
     tablaCategorias = document.getElementById("tablaCategorias");
-    document.getElementById('submitCrearCategoria').addEventListener('click', clickCrearCategoria)
-
+    document.getElementById('submitCrearCategoria').addEventListener('click', clickCrearCategoria);
     cargarTodasLasCategorias();
 
 }
 
 function cargarTodasLasCategorias() {
+    //alert("Cargando todas las categorias --> cargarTodasLasCategorias()")
     var request = new XMLHttpRequest();
-
     request.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
+            alert(this.responseText);
             var categorias = JSON.parse(this.responseText);
             for (var i=0; i<categorias.length; i++) {
                 insertarCategoria(categorias[i]);
@@ -29,27 +30,23 @@ function cargarTodasLasCategorias() {
 }
 
 function clickCrearCategoria() {
-    var campoNombre = document.getElementById("nombre");
-    var nombreObtenido = campoNombre.innerHTML;
-    campoNombre.clear();
-    var request = new XMLHttpRequest();
-    var categoriaNueva;
-    request.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            //var categorias = JSON.parse(this.responseText);
-            categoriaNueva = new categoria(nombreObtenido);
-        }
-    };
-    request.open("GET", "CategoriaCrear.php?nombre="+nombreObtenido);
-    request.send();
-    insertarCategoria(categoriaNueva);
-    alert("Categoria Insertada.")
-
-    // Recoger datos del form.
-    // Limpiar los datos en el form: .clear()
-    // Crear un XMLHttpRequest. Enviar en la URL los datos de la categoria: CategoriaCrear.php?nombre=blablabla
-    // Recoger la respuesta del request. Vendrá un objeto categoría.
-    // Llamar con ese objeto a insertarCategoria(categoria);
+    alert("Creando categoria --> clickCrearCategoria()");
+    var campoNombre = document.getElementById("nombre").value;
+    alert("CampoNombre: "+campoNombre);
+    if (campoNombre!=""){
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                alert("Request de clickCrearCategoria");
+                var categoria = JSON.parse(this.responseText);
+                insertarCategoria(categoria);
+                document.getElementById("nombre").value= "";
+            }
+        };
+        request.open("GET", "CategoriaCrear.php?nombre="+campoNombre);
+        request.send();
+        alert("Se va a realizar una inserción...");
+    }
 }
 
 function insertarCategoria(categoria) {

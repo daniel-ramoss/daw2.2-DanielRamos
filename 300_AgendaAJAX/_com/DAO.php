@@ -1,7 +1,6 @@
 <?php
-
-require_once "_com/Clases.php";
-require_once "_com/Varios.php";
+require_once "Clases.php";
+require_once "Utilidades.php";
 
 class DAO
 {
@@ -12,7 +11,7 @@ class DAO
         $servidor = "localhost";
         $identificador = "root";
         $contrasenna = "";
-        $bd = "agenda"; // Schema
+        $bd = "Agenda"; // Schema
         $opciones = [
             PDO::ATTR_EMULATE_PREPARES => false, // Modo emulación desactivado para prepared statements "reales"
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // Que los errores salgan como excepciones.
@@ -40,65 +39,47 @@ class DAO
         return $rs;
     }
 
-    // Devuelve:
-    //   - null: si ha habido un error
-    //   - 0, 1 u otro número positivo: OK (no errores) y estas son las filas afectadas.
     private static function ejecutarActualizacion(string $sql, array $parametros): ?int
     {
         if (!isset(self::$pdo)) self::$pdo = self::obtenerPdoConexionBd();
 
         $actualizacion = self::$pdo->prepare($sql);
         $sqlConExito = $actualizacion->execute($parametros);
-
         if (!$sqlConExito) return null;
-        else return self::$pdo->lastInsertId();
+        return $actualizacion->rowCount();
     }
-
 
 
     /* CATEGORÍA */
 
     private static function categoriaCrearDesdeRs(array $fila): Categoria
     {
-        return new categoria($fila["id"], $fila["nombre"]);
+        return new Categoria($fila["id"], $fila["nombre"]);
     }
 
     public static function categoriaObtenerPorId(int $id): ?Categoria
     {
-        $rs = self::ejecutarConsulta(
-            "SELECT * FROM categoria WHERE id=?",
-            [$id]
-        );
+        $rs = self::ejecutarConsulta("SELECT * FROM Categoria WHERE id=?", [$id]);
         if ($rs) return self::categoriaCrearDesdeRs($rs[0]);
         else return null;
     }
 
     public static function categoriaActualizar($id, $nombre)
     {
-        self::ejecutarActualizacion(
-            "UPDATE categoria SET nombre=? WHERE id=?",
-            [$nombre, $id]
-        );
+        self::ejecutarActualizacion("UPDATE Categoria SET nombre=? WHERE id=?", [$nombre, $id]);
     }
 
     public static function categoriaCrear(string $nombre): Categoria
     {
-        $idAutogenerado = self::ejecutarActualizacion(
-            "INSERT INTO categoria (nombre) VALUES (?)",
-            [$nombre]
-        );
+        $idAutoGenerado = self::ejecutarActualizacion("INSERT INTO Categoria (nombre) VALUES (?)", [$nombre]);
 
-        return self::categoriaObtenerPorId($idAutogenerado);
+        return self::categoriaObtenerPorId($idAutoGenerado);
     }
 
-    public static function categoriaObtenerTodas(): array
+    public static function categoriaObtenerTodas(): ?array
     {
         $datos = [];
-
-        $rs = self::ejecutarConsulta(
-            "SELECT * FROM categoria ORDER BY nombre",
-            []
-        );
+        $rs = self::ejecutarConsulta("SELECT * FROM Categoria ORDER BY nombre",[]);
 
         foreach ($rs as $fila) {
             $categoria = self::categoriaCrearDesdeRs($fila);
@@ -106,5 +87,10 @@ class DAO
         }
 
         return $datos;
+    }
+
+    public static  function  categoriaEliminar($id): ?int
+    {
+        $rs=self::ejecutarConsulta("DELETE FROM Categoria WHERE id=?", []);;
     }
 }
