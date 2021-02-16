@@ -5,7 +5,6 @@ var tablaCategorias;
 
 
 function inicializaciones() {
-    //alert("Iniciando --> inicializaciones()");
     tablaCategorias = document.getElementById("tablaCategorias");
     document.getElementById('submitCrearCategoria').addEventListener('click', clickCrearCategoria);
     cargarTodasLasCategorias();
@@ -13,11 +12,9 @@ function inicializaciones() {
 }
 
 function cargarTodasLasCategorias() {
-    //alert("Cargando todas las categorias --> cargarTodasLasCategorias()")
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            alert(this.responseText);
             var categorias = JSON.parse(this.responseText);
             for (var i=0; i<categorias.length; i++) {
                 insertarCategoria(categorias[i]);
@@ -56,17 +53,21 @@ function insertarCategoria(categoria) {
     var tr = document.createElement("tr");
     var td = document.createElement("td");
     var a = document.createElement("a");
+    var btnEliminar = document.createElement("input");
+    btnEliminar.type="button";
+    btnEliminar.id="btnEliminar"+categoria.id;
+    btnEliminar.value="Eliminar";
     a.setAttribute("href","CategoriaFicha.php?id=" + categoria.id);
     var textoContenido = document.createTextNode(categoria.nombre);
 
     a.appendChild(textoContenido);
+    a.appendChild(btnEliminar);
     td.appendChild(a);
     tr.appendChild(td);
     tablaCategorias.appendChild(tr);
 }
 
 function eliminarCategoria(id) {
-    // TODO Pendiente de hacer.
 }
 
 function modificarCategoria(categoria) {

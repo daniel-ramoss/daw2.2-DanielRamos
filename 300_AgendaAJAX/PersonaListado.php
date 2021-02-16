@@ -1,19 +1,19 @@
 <?php
-require_once "_com/Varios.php";
+    require_once "_com/Varios.php";
 
-$conexion = obtenerPdoConexionBD();
+    $conexion = obtenerPdoConexionBD();
 
-session_start(); // Crear post-it vacío, o recuperar el que ya haya  (vacío o con cosas).
-if (isset($_REQUEST["soloEstrellas"])) {
-    $_SESSION["soloEstrellas"] = true;
-}
-if (isset($_REQUEST["todos"])) {
-    unset($_SESSION["soloEstrellas"]);
-}
+    session_start(); // Crear post-it vacío, o recuperar el que ya haya  (vacío o con cosas).
+    if (isset($_REQUEST["soloEstrellas"])) {
+        $_SESSION["soloEstrellas"] = true;
+    }
+    if (isset($_REQUEST["todos"])) {
+        unset($_SESSION["soloEstrellas"]);
+    }
 
-$posibleClausulaWhere = isset($_SESSION["soloEstrellas"]) ? "WHERE p.estrella=1" : "";
+    $posibleClausulaWhere = isset($_SESSION["soloEstrellas"]) ? "WHERE p.estrella=1" : "";
 
-$sql = "
+    $sql = "
                SELECT
                     p.id     AS pId,
                     p.nombre AS pNombre,
@@ -28,14 +28,14 @@ $sql = "
                 ORDER BY p.nombre
             ";
 
-$select = $conexion->prepare($sql);
-$select->execute([]); // Array vacío porque la consulta preparada no requiere parámetros.
-$rs = $select->fetchAll();
+    $select = $conexion->prepare($sql);
+    $select->execute([]); // Array vacío porque la consulta preparada no requiere parámetros.
+    $rs = $select->fetchAll();
 
 
-// INTERFAZ:
-// $rs
-// $_SESSION
+    // INTERFAZ:
+    // $rs
+    // $_SESSION
 ?>
 
 
@@ -64,15 +64,15 @@ $rs = $select->fetchAll();
         <tr>
             <td>
                 <?php
-                $urlImagen = $fila["pEstrella"] ? "img/EstrellaRellena.png" : "img/EstrellaVacia.png";
-                echo " <a href='PersonaEstablecerEstadoEstrella.php?id=$fila[pId]'><img src='$urlImagen' width='16' height='16'></a> ";
+                    $urlImagen = $fila["pEstrella"] ? "img/EstrellaRellena.png" : "img/EstrellaVacia.png";
+                    echo " <a href='PersonaEstablecerEstadoEstrella.php?id=$fila[pId]'><img src='$urlImagen' width='16' height='16'></a> ";
 
-                echo "<a href='PersonaFicha.php?id=$fila[pId]'>";
-                echo "$fila[pNombre]";
-                if ($fila["pApellidos"] != "") {
-                    echo " $fila[pApellidos]";
-                }
-                echo "</a>";
+                    echo "<a href='PersonaFicha.php?id=$fila[pId]'>";
+                    echo "$fila[pNombre]";
+                    if ($fila["pApellidos"] != "") {
+                        echo " $fila[pApellidos]";
+                    }
+                    echo "</a>";
                 ?>
             </td>
             <td><a href= 'CategoriaFicha.php?id=<?=$fila["cId"]?>'> <?= $fila["cNombre"] ?> </a></td>
