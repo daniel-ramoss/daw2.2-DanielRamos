@@ -1,215 +1,213 @@
 //window.onload = inicializar;
 //window.onload = inicializarPersonas;
 window.onload = iniciaTodo;
+
 var divCategoriasDatos;
-
 var inputCategoriaNombre;
-
 var divPersonasDatos;
-
 var inputPersonaNombre;
 
 // ---------- VARIOS DE BASE/UTILIDADES ----------
-function iniciaTodo() {
-    inicializar();
-    inicializarPersonas();
-}
-function notificarUsuario(texto) {
-    // TODO En lugar del alert, habría que añadir una línea en una zona de notificaciones, arriba, con un temporizador para que se borre solo en ¿5? segundos.
-    alert(texto);
-}
+    function iniciaTodo() {
+        inicializar();
+        inicializarPersonas();
+    }
 
-function llamadaAjax(url, parametros, manejadorOK, manejadorError) {
-    alert("Haciendo ajax a " + url + "\nCon parámetros " + parametros);
-    var request = new XMLHttpRequest();
-    request.open("POST", url);
-    request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    function notificarUsuario(texto) {
+        // TODO En lugar del alert, habría que añadir una línea en una zona de notificaciones, arriba, con un temporizador para que se borre solo en ¿5? segundos.
+        alert(texto);
+    }
 
-    request.onreadystatechange = function() {
-        if (this.readyState == 4 && request.status == 200) {
-            console.log("ResponseText de la request:"+request.responseText);
-            manejadorOK(request.responseText);
-        }
-        if (manejadorError != null && request.readyState == 4 && this.status != 200) {
-            manejadorError(request.responseText);
-        }
-    };
-    request.send(parametros);
-}
+    function llamadaAjax(url, parametros, manejadorOK, manejadorError) {
+        alert("Haciendo ajax a " + url + "\nCon parámetros " + parametros);
+        var request = new XMLHttpRequest();
+        request.open("POST", url);
+        request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        request.onreadystatechange = function() {
+            if (this.readyState == 4 && request.status == 200) {
+                //console.log("ResponseText de la request:"+request.responseText);
+                manejadorOK(request.responseText);
+            }
+            if (manejadorError != null && request.readyState == 4 && request.status != 200) {
+                manejadorError(request.responseText);
+            }
+        };
+        request.send(parametros);
+    }
 
-function extraerId(texto) {
-    return texto.split('-')[1];
-}
+    function extraerId(texto) {
+        return texto.split('-')[1];
+    }
 
-function objetoAParametrosParaRequest(objeto) {
-    // Esto convierte un objeto JS en un listado de clave1=valor1&clave2=valor2&clave3=valor3
-    return new URLSearchParams(objeto).toString();
-}
+    function objetoAParametrosParaRequest(objeto) {
+        // Esto convierte un objeto JS en un listado de clave1=valor1&clave2=valor2&clave3=valor3
+        return new URLSearchParams(objeto).toString();
+    }
 
-function debug() {
-    // Esto es útil durante el desarrollo para programar el disparado de acciones concretas mediante un simple botón.
-}
+    function debug() {
+        // Esto es útil durante el desarrollo para programar el disparado de acciones concretas mediante un simple botón.
+    }
 
 //---------- MANEJADORES DE EVENTOS / COMUNICACIÓN CON PHP ----------
 
-function inicializar() {
-    divCategoriasDatos = document.getElementById("categoriasDatos");
-    inputCategoriaNombre = document.getElementById("categoriaNombre");
+    function inicializar() {
+        divCategoriasDatos = document.getElementById("categoriasDatos");
+        inputCategoriaNombre = document.getElementById("categoriaNombre");
 
-    document.getElementById('btnCategoriaCrear').addEventListener('click', clickCategoriaCrear);
-    console.log("OBTENIENDO TODAS LAS CATEGORÍAS:")
-    llamadaAjax("CategoriaObtenerTodas.php", "",
-        function (texto) {
-            console.log("Texto Categorias: "+texto);
-            var categorias = JSON.parse(texto);
-
-            for (var i = 0; i < categorias.length; i++) {
-                // No se fuerza la ordenación, ya que PHP nos habrá dado los elementos en orden correcto y sería una pérdida de tiempo.
-                domCategoriaInsertar(categorias[i], false);
+        document.getElementById('btnCategoriaCrear').addEventListener('click', clickCategoriaCrear);
+        console.log("OBTENIENDO TODAS LAS CATEGORÍAS:")
+        llamadaAjax("CategoriaObtenerTodas.php", "",
+            function (texto) {
+                console.log("Texto Categorias: "+texto);
+                var categorias = JSON.parse(texto);
+                for (var i = 0; i < categorias.length; i++) {
+                    // No se fuerza la ordenación, ya que PHP nos habrá dado los elementos en orden correcto y sería una pérdida de tiempo.
+                    domCategoriaInsertar(categorias[i], false);
+                }
             }
-        }
-    );
-}
+        );
+    }
 
-function clickCategoriaCrear() {
-    inputCategoriaNombre.disabled = true;
+    function clickCategoriaCrear()  {
+        inputCategoriaNombre.disabled = true;
 
-    llamadaAjax("CategoriaCrear.php", "nombre=" + inputCategoriaNombre.value,
-        function (texto) {
-            // Se re-crean los datos por si han modificado/normalizado algún valor en el servidor.
-            var categoria = JSON.parse(texto);
-
-            // Se fuerza la ordenación, ya que este elemento podría no quedar ordenado si se pone al final.
-            domCategoriaInsertar(categoria, true);
-
-            inputCategoriaNombre.value = "";
-            inputCategoriaNombre.disabled = false;
-        },
-        function (texto) {
-            notificarUsuario("Error Ajax al crear: " + texto);
-            inputCategoriaNombre.disabled = false;
-        }
-    );
-}
-
-function blurCategoriaModificar(input) {
-    let divCategoria = input.parentElement.parentElement;
-    let id = extraerId(divCategoria.id);
-    let nombre = input.value;
-
-    let categoria = {"id": id, "nombre": nombre};
-
-    llamadaAjax("CategoriaActualizar.php", objetoAParametrosParaRequest(categoria),
-        function (texto) {
-            if (texto != "null") {
+        llamadaAjax("CategoriaCrear.php", "nombre=" + inputCategoriaNombre.value,
+            function (texto) {
                 // Se re-crean los datos por si han modificado/normalizado algún valor en el servidor.
-                categoria = JSON.parse(texto);
-                domCategoriaModificar(categoria);
-            } else {
+                var categoria = JSON.parse(texto);
+
+                // Se fuerza la ordenación, ya que este elemento podría no quedar ordenado si se pone al final.
+                domCategoriaInsertar(categoria, true);
+
+                inputCategoriaNombre.value = "";
+                inputCategoriaNombre.disabled = false;
+            },
+            function (texto) {
+                notificarUsuario("Error Ajax al crear: " + texto);
+                inputCategoriaNombre.disabled = false;
+            }
+        );
+    }
+
+    function blurCategoriaModificar(input) {
+        let divCategoria = input.parentElement.parentElement;
+        let id = extraerId(divCategoria.id);
+        let nombre = input.value;
+
+        let categoria = {"id": id, "nombre": nombre};
+
+        llamadaAjax("CategoriaActualizar.php", objetoAParametrosParaRequest(categoria),
+            function (texto) {
+                if (texto != "null") {
+                    // Se re-crean los datos por si han modificado/normalizado algún valor en el servidor.
+                    categoria = JSON.parse(texto);
+                    domCategoriaModificar(categoria);
+                } else {
+                    alert("Error Ajax al modificar: " + texto);
+                }
+            },
+            function (texto) {
                 alert("Error Ajax al modificar: " + texto);
             }
-        },
-        function (texto) {
-            alert("Error Ajax al modificar: " + texto);
-        }
-    );
-}
+        );
+    }
 
-function clickCategoriaEliminar(id) {
-    llamadaAjax("CategoriaEliminar.php", "id=" + id,
-        function (texto) {
-            var categoria = JSON.parse(texto);
-            domCategoriaEliminar(id);
-        },
-        function (texto) {
-            alert("Error Ajax al eliminar: " + texto);
-        }
-    );
-}
+    function clickCategoriaEliminar(id) {
+        llamadaAjax("CategoriaEliminar.php", "id=" + id,
+            function (texto) {
+                var categoria = JSON.parse(texto);
+                domCategoriaEliminar(id);
+            },
+            function (texto) {
+                alert("Error Ajax al eliminar: " + texto);
+            }
+        );
+    }
 
 // ---------- GESTIÓN DEL DOM ----------
 
-function domCategoriaCrearDiv(categoria) {
-    let nombreInput = document.createElement("input");
-    nombreInput.setAttribute("type", "text");
-    nombreInput.setAttribute("value", categoria.nombre);
-    nombreInput.setAttribute("onblur", "blurCategoriaModificar(this); return false;");
-    let nombreDiv = document.createElement("div");
-    nombreDiv.appendChild(nombreInput);
+    function domCategoriaCrearDiv(categoria) {
+        let nombreInput = document.createElement("input");
+        nombreInput.setAttribute("type", "text");
+        nombreInput.setAttribute("value", categoria.nombre);
+        nombreInput.setAttribute("onblur", "blurCategoriaModificar(this); return false;");
+        let nombreDiv = document.createElement("div");
+        nombreDiv.appendChild(nombreInput);
 
-    let eliminarImg = document.createElement("img");
-    eliminarImg.setAttribute("src", "img/Eliminar.png");
-    eliminarImg.setAttribute("onclick", "clickCategoriaEliminar(" + categoria.id + "); return false;");
-    let eliminarDiv = document.createElement("div");
-    eliminarDiv.appendChild(eliminarImg);
+        let eliminarImg = document.createElement("img");
+        eliminarImg.setAttribute("src", "img/Eliminar.png");
+        eliminarImg.setAttribute("onclick", "clickCategoriaEliminar(" + categoria.id + "); return false;");
+        let eliminarDiv = document.createElement("div");
+        eliminarDiv.appendChild(eliminarImg);
 
-    let divCategoria = document.createElement("div");
-    divCategoria.setAttribute("id", "categoria-" + categoria.id);
-    divCategoria.appendChild(nombreDiv);
-    divCategoria.appendChild(eliminarDiv);
+        let divCategoria = document.createElement("div");
+        divCategoria.setAttribute("id", "categoria-" + categoria.id);
+        divCategoria.appendChild(nombreDiv);
+        divCategoria.appendChild(eliminarDiv);
 
-    return divCategoria;
-}
+        return divCategoria;
+    }
 
-function domCategoriaObtenerDiv(pos) {
-    let div = divCategoriasDatos.children[pos];
-    return div;
-}
+    function domCategoriaObtenerDiv(pos) {
+        let div = divCategoriasDatos.children[pos];
+        return div;
+    }
 
-function domCategoriaObtenerObjeto(pos) {
-    let divCategoria = domCategoriaObtenerDiv(pos);
-    let divNombre = divCategoria.children[0];
-    let input = divNombre.children[0];
+    function domCategoriaObtenerObjeto(pos) {
+        let divCategoria = domCategoriaObtenerDiv(pos);
+        let divNombre = divCategoria.children[0];
+        let input = divNombre.children[0];
 
-    return {"id": extraerId(divCategoria.id), "nombre": input.value}; // Devolvemos un objeto recién creado con los datos que hemos obtenido.
-}
+        return {"id": extraerId(divCategoria.id), "nombre": input.value};
+        // Devolvemos un objeto recién creado con los datos que hemos obtenido.
+    }
 
-function domCategoriaEjecutarInsercion(pos, categoria) {
-    let divReferencia = domCategoriaObtenerDiv(pos);
-    let divNuevo = domCategoriaCrearDiv(categoria);
+    function domCategoriaEjecutarInsercion(pos, categoria) {
+        let divReferencia = domCategoriaObtenerDiv(pos);
+        let divNuevo = domCategoriaCrearDiv(categoria);
 
-    divCategoriasDatos.insertBefore(divNuevo, divReferencia);
-}
+        divCategoriasDatos.insertBefore(divNuevo, divReferencia);
+    }
 
-function domCategoriaInsertar(categoriaNueva, enOrden = false) {
-    // Si piden insertar en orden, se buscará su lugar. Si no, irá al final.
-    if (enOrden) {
-        for (let pos = 0; pos < divCategoriasDatos.children.length; pos++) {
-            let categoriaActual = domCategoriaObtenerObjeto(pos);
+    function domCategoriaInsertar(categoriaNueva, enOrden = false) {
+        // Si piden insertar en orden, se buscará su lugar. Si no, irá al final.
+        if (enOrden) {
+            for (let pos = 0; pos < divCategoriasDatos.children.length; pos++) {
+                let categoriaActual = domCategoriaObtenerObjeto(pos);
 
-            if (categoriaNueva.nombre.localeCompare(categoriaActual.nombre) == -1) {
-                // Si la categoría nueva va ANTES que la actual, este es el punto en el que insertarla.
-                domCategoriaEjecutarInsercion(pos, categoriaNueva);
-                return;
+                if (categoriaNueva.nombre.localeCompare(categoriaActual.nombre) == -1) {
+                    // Si la categoría nueva va ANTES que la actual, este es el punto en el que insertarla.
+                    domCategoriaEjecutarInsercion(pos, categoriaNueva);
+                    return;
+                }
             }
         }
+
+        domCategoriaEjecutarInsercion(divCategoriasDatos.children.length, categoriaNueva);
     }
 
-    domCategoriaEjecutarInsercion(divCategoriasDatos.children.length, categoriaNueva);
-}
+    function domCategoriaLocalizarPosicion(id) {
+        var trs = divCategoriasDatos.children;
 
-function domCategoriaLocalizarPosicion(id) {
-    var trs = divCategoriasDatos.children;
+        for (var pos = 0; pos < divCategoriasDatos.children.length; pos++) {
+            let categoriaActual = domCategoriaObtenerObjeto(pos);
 
-    for (var pos = 0; pos < divCategoriasDatos.children.length; pos++) {
-        let categoriaActual = domCategoriaObtenerObjeto(pos);
+            if (categoriaActual.id == id) return (pos);
+        }
 
-        if (categoriaActual.id == id) return (pos);
+        return -1;
     }
 
-    return -1;
-}
+    function domCategoriaEliminar(id) {
+        domCategoriaObtenerDiv(domCategoriaLocalizarPosicion(id)).remove();
+    }
 
-function domCategoriaEliminar(id) {
-    domCategoriaObtenerDiv(domCategoriaLocalizarPosicion(id)).remove();
-}
+    function domCategoriaModificar(categoria) {
+        domCategoriaEliminar(categoria.id);
 
-function domCategoriaModificar(categoria) {
-    domCategoriaEliminar(categoria.id);
-
-    // Se fuerza la ordenación, ya que este elemento podría no quedar ordenado si se pone al final.
-    domCategoriaInsertar(categoria, true);
-}
+        // Se fuerza la ordenación, ya que este elemento podría no quedar ordenado si se pone al final.
+        domCategoriaInsertar(categoria, true);
+    }
 
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -244,10 +242,11 @@ function clickPersonaCrear() {
     inputPersonaTelefono.disabled = true;
     inputPersonaCategoria.disabled = true;
 
-    llamadaAjax("PersonaCrear.php", ("'nombre'='"+inputPersonaNombre.value+"', " +
-                                         "'apellidos'='"+inputPersonaApellidos.value+"', "+
-                                         "'telefono'='"+inputPersonaTelefono.value+"', "+
-                                         "'categoria='"+inputPersonaCategoria.value+"'"),
+    var params = {"nombre": inputPersonaNombre.value, "apellidos": inputPersonaApellidos.value,
+                    "telefono": inputPersonaTelefono.value, "categoriaId":inputPersonaCategoria.value};
+    //("nombre="+inputPersonaNombre.value+"; apellidos="+inputPersonaApellidos.value+
+    //         "; telefono="+inputPersonaTelefono.value+"; categoria="+inputPersonaCategoria.value+";")
+    llamadaAjax("PersonaCrear.php", objetoAParametrosParaRequest(params),
         function (texto) {
             // Se re-crean los datos por si han modificado/normalizado algún valor en el servidor.
             //console.log("Texto creacion persona: "+texto);
@@ -363,6 +362,7 @@ function domPersonaCrearDiv(persona) {
 
 function domPersonaObtenerDiv(pos) {
     let div = divPersonasDatos.children[pos];
+    console.log("Div de domPersonaObtenerDiv(pos): "+div);
     return div;
 }
 
@@ -370,14 +370,17 @@ function domPersonaObtenerObjeto(pos) {
     let divPersona = domPersonaObtenerDiv(pos);
     let divNombre = divPersona.children[0];
     let input = divNombre.children[0];
-    let input2 = divNombre.children[1];
-    let input3 = divNombre.children[2];
-    let input4 = divNombre.children[3];
+    let input2 = input.nextElementSibling;
+    let input3 = input.nextElementSibling;
+    let input4 = input.nextElementSibling;
     //let input5 = divNombre.children[4];
 
+
     return {"id": extraerId(divPersona.id), "nombre": input.value, "apellidos":input2.value,
-            "teléfono":input3.value, "categoria":input4.value}; // Devolvemos un objeto recién creado con los datos que hemos obtenido.
-            //, "estrella": input5.value
+            "teléfono":input3.value, "categoriaId":input4.value};
+    //, "estrella": input5.value
+    // Devolvemos un objeto recién creado con los datos que hemos obtenido.
+
 }
 
 function domPersonaEjecutarInsercion(pos, persona) {
@@ -387,22 +390,22 @@ function domPersonaEjecutarInsercion(pos, persona) {
     divPersonasDatos.insertBefore(divNuevo, divReferencia);
 }
 
-function domPersonaInsertar(personaNueva, enOrden = false) {
-    // Si piden insertar en orden, se buscará su lugar. Si no, irá al final.
-    if (enOrden) {
-        for (let pos = 0; pos < divPersonasDatos.children.length; pos++) {
-            let personaActual = domPersonaObtenerObjeto(pos);
+    function domPersonaInsertar(personaNueva, enOrden = false) {
+        // Si piden insertar en orden, se buscará su lugar. Si no, irá al final.
+        if (enOrden) {
+            for (let pos = 0; pos < divPersonasDatos.children.length; pos++) {
+                let personaActual = domPersonaObtenerObjeto(pos);
 
-            if (personaNueva.nombre.localeCompare(personaActual.nombre) == -1) {
-                // Si la categoría nueva va ANTES que la actual, este es el punto en el que insertarla.
-                domPersonaEjecutarInsercion(pos, personaNueva);
-                return;
+                if (personaNueva.nombre.localeCompare(personaActual.nombre) == -1) {
+                    // Si la categoría nueva va ANTES que la actual, este es el punto en el que insertarla.
+                    domPersonaEjecutarInsercion(pos, personaNueva);
+                    return;
+                }
             }
         }
-    }
 
-    domPersonaEjecutarInsercion(divPersonasDatos.children.length, personaNueva);
-}
+        domPersonaEjecutarInsercion(divPersonasDatos.children.length, personaNueva);
+    }
 
 function domPersonaLocalizarPosicion(id) {
     var trs = divPersonasDatos.children;
