@@ -1,0 +1,5 @@
+PARA VIERNES (grupo .1):
+
+Convertir el adivinar original basado en hidden-s en una aplicación basada en sesiones.
+
+Opcional: meter también número de intentos y demás opcionales originales en la sesión.
